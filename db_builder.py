@@ -62,9 +62,9 @@ class DBdata:  # <-------------------------------------------DATA FOR DATABASE--
 
     def password_verify(self):
         password = input(">>> >>> " + "Input a user password: ")
-        password2 = input(">>> >>> " + "Repeat a user password: ")
+        repeated_password = input(">>> >>> " + "Repeat a user password: ")
 
-        if password == password2:
+        if password == repeated_password:
             self.user_password = password
         else:
             print(">>> " + "Error! Try again")
