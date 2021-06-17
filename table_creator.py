@@ -29,8 +29,8 @@ class DBdata:  # <-------------------------------------------DATA FOR DATABASE--
         self.user_name = "root"
         self.user_password = ""
 
-        self.table_name = "test_table"
-        self.table_data = ("table_id INT AUTOINCREMENT",
+        self.table_name = "test_table2"
+        self.table_data = ("table_id INT AUTO_INCREMENT",
                            "column1 TEXT",
                            "column2 CHAR(30)",
                            "column3 INT")
@@ -95,7 +95,8 @@ class DatabaseConnector:
             self.connection = mysql.connector.connect(
                 host=self.host_address,
                 user=self.user_name,
-                passwd=self.user_password
+                passwd=self.user_password,
+                database=self.db_name
             )
             self.status = "Connection to MySQL server successful"
         except Error as e:
