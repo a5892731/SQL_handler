@@ -2,15 +2,14 @@
 #
 # author: a5892731
 # version: 1.0
-# date: 2021-06-16
+# date: 2021-06-17
 # lat update: 2021-06-17
 #
 # Description:
-# Ths is a script that connects to server and builds a database
+# Ths is a script that creates a table in database
 # It can be run directly from linux console
 # ---------------------------------------------------------------------------------------------------------------------
 #
-
 
 try:
     import mysql.connector
@@ -29,6 +28,12 @@ class DBdata:  # <-------------------------------------------DATA FOR DATABASE--
         self.host_address = "127.0.0.1"
         self.user_name = "root"
         self.user_password = ""
+
+        self.table_name = "test_table"
+        self.table_data = ("table_id INT AUTOINCREMENT",
+                           "column1 TEXT",
+                           "column2 CHAR(30)",
+                           "column3 INT")
 
         self.status = "" # class information status
 
@@ -74,20 +79,20 @@ class DBdata:  # <-------------------------------------------DATA FOR DATABASE--
     def __del__(self):
         print(">>> " + "Connection data deleted")
 
-#-----------------------------------------------------------------------------------------------------------------------
 
-class DatabaseBuilder:
+class DatabaseConnector:
     def __init__(self, db_name, host_address, user_name, user_password):
         self.db_name = db_name
         self.host_address = host_address
         self.user_name = user_name
         self.user_password = user_password
         self.status = ""  # error status of DB
+        self.connection = None
 
     def create_connection_to_server(self):
-        connection = None
+
         try:
-            connection = mysql.connector.connect(
+            self.connection = mysql.connector.connect(
                 host=self.host_address,
                 user=self.user_name,
                 passwd=self.user_password
@@ -95,35 +100,74 @@ class DatabaseBuilder:
             self.status = "Connection to MySQL server successful"
         except Error as e:
             self.status = f"The error '{e}' occurred"
-        return connection
 
+    def execute_query(self, query, message):
 
-    def create_database(self, connection, query):
-        cursor = connection.cursor()
+        cursor = self.connection.cursor()
         try:
             cursor.execute(query)
-            self.status = "Database created successfully"
-
+            self.connection.commit()
+            self.status = "{}".format(message)
         except Error as e:
-            if "1007 (HY000)" in f"{e}":
-                self.status = "Database exists"
-            else:
-                self.status = f"The error '{e}' occurred"
+            self.status = f"The error '{e}' occurred"
+
+
 
     def __del__(self):
-        print(">>> " + "Database data deleted")
+        print(">>> " + "DB connector data deleted")
 
+
+class TableBuilder:
+    def __init__(self, table_name, table):
+        self.table_name = table_name
+        self.table = table
+
+        self.table_SQL = ""
+
+    def create_table(self):
+
+        def create_columns(table):
+            columns = ""
+
+            for column in table:
+                columns += column + ", "
+            columns += "PRIMARY KEY ({})".format(columns.split(" ")[0])
+
+            return columns
+
+        create_table = """
+        CREATE TABLE IF NOT EXISTS {} (
+          {}
+        ) ENGINE = InnoDB 
+        """.format(self.table_name, create_columns(self.table))
+
+        #self.execute_query(self.connection, create_table, "DB {} table created successfully".format(self.table_name))
+
+        self.table_SQL = create_table
+
+
+    def __del__(self):
+        print(">>> " + "Table builder data deleted")
+
+#-----------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print(">>> " + "db_builder is starting")
 
-    connection_data = DBdata()
-    print(">>> " + connection_data.status)
+    user_data = DBdata()
 
-    db = DatabaseBuilder(connection_data.db_name, connection_data.host_address,
-                         connection_data.user_name, connection_data.user_password)
+    connector = DatabaseConnector(user_data.db_name, user_data.host_address,
+                                  user_data.user_name, user_data.user_password)
 
-    connection = db.create_connection_to_server()
-    print(">>> " + db.status)
-    create_database_query = "CREATE DATABASE {}".format(connection_data.db_name)
-    db.create_database(connection, create_database_query)
-    print(">>> " + db.status)
+    connector.create_connection_to_server()
+    print(">>> " + connector.status)
+
+
+    table = TableBuilder(user_data.table_name, user_data.table_data)
+    table.create_table()
+    print("SQL: " + table.table_SQL)
+
+
+    connector.execute_query(table.table_SQL,
+                            "DB {} table created successfully".format(user_data.table_name))
+    print(">>> " + connector.status)
+
+
