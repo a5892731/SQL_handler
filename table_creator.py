@@ -6,7 +6,7 @@
 # lat update: 2021-06-17
 #
 # Description:
-# Ths is a script that creates a table in database
+# Ths is a script that connects to database and creates a table in it
 # It can be run directly from linux console
 # ---------------------------------------------------------------------------------------------------------------------
 #
