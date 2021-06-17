@@ -132,7 +132,7 @@ class TableBuilder:
 
             for column in table:
                 columns += column + ", "
-            columns += "PRIMARY KEY ({})".format(columns.split(" ")[0])
+            columns += "PRIMARY KEY ({})".format(columns.split(" ")[0]) # add to the end "PRIMARY KEY (first_column_name)"
 
             return columns
 
