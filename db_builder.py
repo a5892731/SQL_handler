@@ -3,7 +3,7 @@
 # author: a5892731
 # version: 1.0
 # date: 2021-06-16
-# lat update: 2021-06-17
+# lat update: 2021-07-04
 #
 # Description:
 # Ths is a script that connects to server and builds a database
@@ -124,6 +124,6 @@ if __name__ == "__main__":
 
     connection = db.create_connection_to_server()
     print(">>> " + db.status)
-    create_database_query = "CREATE DATABASE {}".format(connection_data.db_name)
+    create_database_query = "CREATE DATABASE {} CHARSET=utf8".format(connection_data.db_name)
     db.create_database(connection, create_database_query)
     print(">>> " + db.status)
